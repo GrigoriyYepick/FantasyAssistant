@@ -1,0 +1,17 @@
+{
+  "OpenAi":
+  {
+    "ApiKey": ""
+  },
+  "Fantasy":
+  {
+    "TeamId" : "",
+    "LastGameWeek" : "2"
+  },
+  "Endpoints":
+  {
+    "Bootstrap" : "https://fantasy.premierleague.com/api/bootstrap-static/",
+    "Fixtures" : "https://fantasy.premierleague.com/api/fixtures/",
+    "Team" : "https://fantasy.premierleague.com/api/entry/{0}/event/{1}/picks/"
+  }
+}
