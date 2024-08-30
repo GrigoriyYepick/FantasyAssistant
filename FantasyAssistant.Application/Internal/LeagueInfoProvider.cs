@@ -11,24 +11,36 @@ internal sealed class LeagueInfoProvider : ILeagueInfoProvider
         _fantasyDataProvider = fantasyDataProvider;
     }
 
-    public async Task<FantasyData> ReadDataAsync()
+    public async Task<(MyTeamData MyTeam, FantasyData AllPlayers)> ReadDataAsync()
     {
         var rawData = await _fantasyDataProvider.ReadRawDataAsync().ConfigureAwait(false);
         var teamsMap = rawData.Teams.ToDictionary(team => team.Id);
 
         MapMyPicks(rawData.MyPlayers, rawData.AllPlayers, teamsMap);
 
+        var myGoalkeepers = FilterPlayersByType(rawData.MyPlayers, PlayerType.Goalkeeper);
+        var myDefenders = FilterPlayersByType(rawData.MyPlayers, PlayerType.Defender);
+        var myMidfielders = FilterPlayersByType(rawData.MyPlayers, PlayerType.Midfielder);
+        var myForwards = FilterPlayersByType(rawData.MyPlayers, PlayerType.Forward);
+
+        var myFantasyData = new MyTeamData(
+            myGoalkeepers,
+            myDefenders,
+            myMidfielders,
+            myForwards);
+
         var goalkeepers = FilterPlayersByType(rawData.AllPlayers, PlayerType.Goalkeeper, teamsMap, rawData.Fixtures);
         var defenders = FilterPlayersByType(rawData.AllPlayers, PlayerType.Defender, teamsMap, rawData.Fixtures);
         var midfielders = FilterPlayersByType(rawData.AllPlayers, PlayerType.Midfielder, teamsMap, rawData.Fixtures);
         var forwards = FilterPlayersByType(rawData.AllPlayers, PlayerType.Forward, teamsMap, rawData.Fixtures);
 
-        return new FantasyData(
-            rawData.MyPlayers,
+        var bestPlayersData = new FantasyData(
             goalkeepers,
             defenders,
             midfielders,
             forwards);
+
+        return (myFantasyData, bestPlayersData);
     }
 
     private static void MapMyPicks(
@@ -46,6 +58,15 @@ internal sealed class LeagueInfoProvider : ILeagueInfoProvider
                 playerPick.Player = player;
             }
         }
+    }
+
+    private static List<PlayerPick> FilterPlayersByType(
+        IReadOnlyCollection<PlayerPick> players,
+        PlayerType playerType)
+    {
+        return players
+            .Where(pick => pick.Player is not null && pick.Player.Type == playerType)
+            .ToList();
     }
 
     private static List<Player> FilterPlayersByType(

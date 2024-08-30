@@ -1,7 +1,12 @@
 namespace FantasyAssistant.Application.Model;
 
+public record MyTeamData(
+    IReadOnlyCollection<PlayerPick> Goalkeepers,
+    IReadOnlyCollection<PlayerPick> Defenders,
+    IReadOnlyCollection<PlayerPick> Midfielders,
+    IReadOnlyCollection<PlayerPick> Forwards);
+
 public record FantasyData(
-    IReadOnlyCollection<PlayerPick> MyPlayers,
     IReadOnlyCollection<Player> Goalkeepers,
     IReadOnlyCollection<Player> Defenders,
     IReadOnlyCollection<Player> Midfielders,

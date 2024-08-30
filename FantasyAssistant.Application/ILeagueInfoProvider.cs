@@ -4,5 +4,5 @@ namespace FantasyAssistant.Application;
 
 public interface ILeagueInfoProvider
 {
-    Task<FantasyData> ReadDataAsync();
+    Task<(MyTeamData MyTeam, FantasyData AllPlayers)> ReadDataAsync();
 }
