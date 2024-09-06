@@ -9,8 +9,7 @@ public sealed class AppInstaller : IInstaller
 {
     public void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddSingleton<IEndPointsParameters, EndPointsParameters>();
-        services.AddSingleton<IFantasyParameters, FantasyParameters>();
+        services.AddSingleton<IFantasyApiService, FantasyApiService>();
         services.AddSingleton<IFantasyDataProvider, FantasyDataProvider>();
         services.AddSingleton<ILeagueInfoProvider, LeagueInfoProvider>();
     }

@@ -1,5 +1,6 @@
 using System.Text;
 using FantasyAssistant.Application;
+using FantasyAssistant.Application.Internal;
 using FantasyAssistant.AutoMapper;
 using FantasyAssistant.DI;
 using FantasyAssistant.Executable.Internal;
@@ -14,7 +15,9 @@ var serviceProvider = BuildServiceProvider(configuration);
 var builder = Kernel.CreateBuilder();
 
 // Services
-builder.AddOpenAIChatCompletion(configuration["OpenAi:Model"]!, configuration["OpenAi:ApiKey"]!);
+var model = configuration.GetSetting("OpenAi:Model");
+var apiKey = configuration.GetSetting("OpenAi:ApiKey");
+builder.AddOpenAIChatCompletion(model, apiKey);
 
 // Plugins
 
@@ -67,8 +70,18 @@ static IServiceProvider BuildServiceProvider(IConfiguration configuration)
     var services = new ServiceCollection();
     services.AddSingleton(configuration);
 
+    services.AddSettings<ApiSettings>(configuration, "API");
+    services.AddSettings<FantasySettings>(configuration, "Fantasy");
+
     services.AddAutoMapper(typeof(MapperProfile));
     services.AddInternalServices(configuration);
+
+    var apiUrl = configuration.GetSetting("API:BaseAddress");
+
+    services.AddHttpClient("api", client =>
+    {
+        client.BaseAddress = new Uri(apiUrl);
+    });
 
     return services.BuildServiceProvider();
 }
